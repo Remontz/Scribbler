@@ -1,0 +1,8 @@
+20230919	09:35:38	212d4f0e-8ffd-4ca1-82cf-46a84031c534	OPTIONS	http://localhost:3000	/register
+20230919	09:35:38	9f29405a-2547-4efd-9050-dd41ed662d24	POST	http://localhost:3000	/register
+20230919	09:36:36	be3b966d-32f7-4796-8746-b97af2ba958b	OPTIONS	http://localhost:3000	/auth
+20230919	09:36:36	5ef4108f-b216-40cc-aec7-5070809dad4d	POST	http://localhost:3000	/auth
+20230919	09:48:01	9001b114-e162-4a92-9461-46b2981ee085	OPTIONS	http://localhost:3000	/auth
+20230919	09:48:01	432d6506-2c7a-4472-9124-f5f835a99f4e	POST	http://localhost:3000	/auth
+20230919	12:17:13	f8259ccd-e98f-4ed3-a5fa-82c6dcc1ad5a	OPTIONS	http://localhost:3000	/auth
+20230919	12:17:13	abd77e74-b535-4046-b258-76147e376648	POST	http://localhost:3000	/auth
