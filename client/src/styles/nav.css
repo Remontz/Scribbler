@@ -1,0 +1,38 @@
+@import url('https://fonts.googleapis.com/css2?family=Ubuntu&family=Teko&display=swap');
+:root {
+    --dark-green: #14281D;
+    --green: #355834;
+    --lite-green: #8AAA79;
+    --bone: #D1D5DE;
+    --gray: #B7B6C2;
+    --font-size: 1.3rem;
+    --ubuntu: "Ubuntu Condensed", sans-serif;
+    --teko: Teko, sans-serif;
+    --suns-orange: #dd6c1c;
+}
+
+nav {
+    padding: 0;
+    margin: 0;
+}
+
+nav #title {
+    font-family: var(--teko);
+    font-size: 4rem;
+    padding: 0 0 0 5%;
+    margin: 0;
+    color: var(--bone);
+    -webkit-text-stroke: #14281D 0.3px;
+}
+
+nav ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-flow: row-wrap;
+    justify-content: center;
+    align-items: center;
+    column-gap: 3rem;
+    font-size: 2rem;
+}

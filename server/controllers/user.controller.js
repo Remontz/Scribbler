@@ -27,7 +27,7 @@ const getUser = async (req, res) => {
 
 const updateUser = async (req, res) => {
     const { _id, username, email, password, roles, library, favorites, ownedWork, friends } = req.body
-    if(!id) { return res.status(400).json({'message' : 'User ID required.'}) }
+    if(!_id) { return res.status(400).json({'message' : 'User ID required.'}) }
 
     const user = await User.findOne({_id}).exec()
     if(!user) { return res.status(204).json({ 'message': `User ID ${req.body.id} not found` }) }

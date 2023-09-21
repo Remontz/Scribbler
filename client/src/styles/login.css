@@ -1,0 +1,115 @@
+@import url('https://fonts.googleapis.com/css2?family=Ubuntu&family=Teko&display=swap');
+:root {
+    --dark-green: #14281D;
+    --green: #355834;
+    --lite-green: #8AAA79;
+    --bone: #D1D5DE;
+    --gray: #B7B6C2;
+    --font-size: 1.3rem;
+    --ubuntu: "Ubuntu Condensed", sans-serif;
+    --teko: Teko, sans-serif;
+    --suns-orange: #dd6c1c;
+}
+
+section#registration, section#login, section#story {
+    min-height: 100vh;
+    background-color: var(--green);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding:1rem 0.5rem;
+    margin: 0.3rem;
+}
+
+form {
+    padding: 10px 10px;
+    background-color: rgba(0,0,0,0.4);
+    width: 100%;
+    max-width: 420px;
+    min-height: 400px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-content: center;
+    flex-grow: 1;
+    padding-bottom: 1rem;
+    font-size: 22px;
+    margin: 1rem;
+    border-radius: 25px;
+}
+
+a, a:visited {
+    color: var(--bone);
+}
+
+input[type='text'], input[type='password'], button, textarea {
+    font-family: var(--teko);
+    font-size: 22px;
+    padding: 0.25rem;
+    border-radius: 0.5rem;
+}
+
+label, button {
+    margin-top: 1rem;
+}
+
+button {
+    padding: 0.5rem;
+    width: 65%;
+    align-self: center;
+    color: var(--suns-orange);
+}
+
+button:hover {
+    cursor: pointer;
+    background-color: var(--suns-orange);
+    color: #000;
+}
+
+.instructions {
+    font-size: 0.75rem;
+    border-radius: 0.5rem;
+    background: #000;
+    color: #fff;
+    padding: 0.25rem;
+    position: relative;
+    bottom: -10px;
+}
+
+.instructions > svg {
+    margin-right: 0.25rem;
+}
+
+.offscreen {
+    position: absolute;
+    left: -9999px;
+}
+
+.hide {
+    display: none;
+}
+
+.valid {
+    color: limegreen;
+    margin-left: 0.25rem;
+}
+
+.invalid {
+    color: red;
+    margin-left: 0.25rem;
+}
+
+.errmsg {
+    background-color: lightpink;
+    color: firebrick;
+    font-weight: bold;
+    padding: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.line {
+    display: inline-block;
+    font-size: 15px;
+    padding: 0 auto;
+}

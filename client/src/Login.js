@@ -2,6 +2,7 @@ import { useRef, useState, useEffect, useContext } from "react";
 import AuthContext from "./context/AuthProvider";
 import axios from "./api/axios";
 import { HashLink as Link } from "react-router-hash-link";
+import './styles/login.css'
 
 const LOGIN_URL = "/auth";
 
@@ -39,7 +40,8 @@ const Login = () => {
         console.log(JSON.stringify(response));
         const accessToken = response?.data?.accessToken;
         const roles = response?.data?.roles;
-        setAuth({ user, pwd, roles, accessToken });
+        const _id = response?.data?._id;
+        setAuth({ user, pwd, roles, accessToken, _id });
         setUser("");
         setPwd("");
         setSuccess(true);
@@ -60,7 +62,7 @@ const Login = () => {
     return (
     <>
         {success ? (
-        <section>
+        <section id="login">
             <h1>You are logged in!</h1>
             <br />
             <p>

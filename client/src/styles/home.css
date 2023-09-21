@@ -1,5 +1,4 @@
 @import url('https://fonts.googleapis.com/css2?family=Ubuntu&family=Teko&display=swap');
-
 :root {
     --dark-green: #14281D;
     --green: #355834;
@@ -10,17 +9,9 @@
     --ubuntu: "Ubuntu Condensed", sans-serif;
     --teko: Teko, sans-serif;
     --suns-orange: #dd6c1c;
-
 }
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-html {
-    background-color: var(--lite-green);
-    font-family: var(--ubuntu);
-    color: var(--dark-green);
+#faves, #library {
+    color: var(--suns-orange);
+    padding: 4rem 1rem;
 }

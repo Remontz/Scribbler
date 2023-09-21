@@ -1,0 +1,60 @@
+@import url('https://fonts.googleapis.com/css2?family=Ubuntu&family=Teko&display=swap');
+
+:root {
+    --dark-green: #14281D;
+    --green: #355834;
+    --lite-green: #8AAA79;
+    --bone: #D1D5DE;
+    --gray: #B7B6C2;
+    --font-size: 1.3rem;
+    --ubuntu: "Ubuntu Condensed", sans-serif;
+    --teko: Teko, sans-serif;
+    --suns-orange: #dd6c1c;
+}
+
+html {
+  box-sizing: border-box
+}
+
+*, *::before,
+*::after {
+  box-sizing: inherit;
+}
+
+main {
+  padding: 0;
+  margin: 0;
+  font-family: var(--PRIDI);
+  background-image: linear-gradient(55deg, var(--green), var(--dark-green) 65%, var(--wine));
+  border-radius: 15px;
+}
+
+main a:hover{
+  cursor: pointer;
+  color: var(--bone);
+}
+
+/* Backgrounds */
+.dark-green {
+  background-color: var(--dark-green);
+}
+.bone {
+  background-color: var(--bone);
+}
+.green {
+  background-color: var(--green);
+}
+.lite-green {
+  background-color: var(--lite-green);
+}
+.gray {
+  background-color: var(--gray);
+}
+.gradient {
+  background: var(--bone);
+  height: 1px;
+}
+.sub-gradient {
+  background: var(--lite-green);
+  height: 1px;
+}
