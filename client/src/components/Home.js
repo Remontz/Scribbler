@@ -3,49 +3,48 @@ import AuthContext from '../context/AuthProvider'
 import Nav from './sections/Nav'
 import Footer from './sections/Footer'
 import '../styles/home.css'
-import axios from 'axios'
+import axios from '../api/axios'
+import { HashLink as Link } from 'react-router-hash-link';
 
 
 const Home = () => {
   const { auth } = useContext(AuthContext);
+  const [author, setAuthor] = useState('')
   const [favorites, setFavorites] = useState([])
   const [library, setLibrary] = useState([])
   const [ownedWork, setOwnedWork] = useState([])
   const [stories, setStories] = useState([])
+  const [authorsMap, setAuthorsMap] = useState({}) // Store author names
 
 
+  // Fetch All Stories on page load
   useEffect(() => {
-    axios.get(`http://localhost:3500/api/stories`, {
-      headers: {
-        Authorization: `Bearer ${auth.accessToken}`,
-      },
+    axios.get('/stories')
+    .then(res => {
+      setStories(res.data)
+      // Fetch and store author Names
+      const authorIds = res.data.map(story => story.author)
+      console.log(authorIds + ' authorIds')
+      fetchAuthorsNames(authorIds)
     })
-    .then((response) => {
-      console.log(response.data)
-      setStories(response.data)
-    })
-    .catch((error) => {
-      console.log(error)
-    })
-  }, [auth])
+    .catch(err => console.log('Error fetching stories', err))
+  }, [])
 
-  useEffect(() => {
-    axios.get(`http://localhost:3500/api/users/${auth._id}`, {
-      headers: {
-        Authorization: `Bearer ${auth.accessToken}`,
-      },
-    })
-    .then((response) => {
-      console.log(response.data)
-      setFavorites(response.data.favorites)
-      setLibrary(response.data.library)
-      setOwnedWork(response.data.ownedWork)
-    })
-    .catch((error) => {
-      console.log(error)
+  // Fetch Author Names
+  const fetchAuthorsNames = (authorIds) => {
+    authorIds.forEach(authorId => {
+      axios.get(`/users/${authorId}`)
+      .then(res => {
+        console.log('Author Name Response:', res.data.username) // debugging Author Name
+        setAuthorsMap(prevAuthors => ({
+          ...prevAuthors,
+          [authorId]: res.data.username, // Store author name by ID
+        }))
       })
-      console.log(auth)
-  }, [auth])
+      .catch(err => console.log(err))
+    })
+  }
+
 
   return (
     <section id='home'>
@@ -55,7 +54,7 @@ const Home = () => {
           <ul>
           { favorites.map((story, index) => {
             return(
-              <li>{story}</li>
+              <li key={index}>{story}</li>
             )
           }) }
           </ul>
@@ -66,9 +65,9 @@ const Home = () => {
           <ul>
           { stories.map((story, index) => {
             return(
-              <li>
-                <span>{story.title}</span>
-                <span>{story.author}</span>
+              <li key={index}>
+                <span> <Link to={`/story/${story._id}`}> {story.title} </Link> </span>
+                <span> by {authorsMap[story.author]}</span>
               </li>
             )
           }) }

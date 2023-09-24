@@ -9,12 +9,13 @@ import '../styles/login.css'
 import Nav from './sections/Nav'
 import Footer from './sections/Footer'
 
-const STORY_URL = '/story'
+const STORY_URL = '/stories'
 
 const CreateStory = () => {
     const titleRef = useRef()
     const errRef = useRef()
     const { auth } = useContext(AuthContext)
+    const [author, setAuthor] = useState()
 
     //Field States
     const [title, setTitle] = useState('')
@@ -70,19 +71,50 @@ const CreateStory = () => {
         setValidContent(result)
     }, [content])
 
+    useEffect(() => {
+        const fetchAuthor = async () => {
+            console.log(auth)
+            console.log(auth._id)
+            console.log(auth.accessToken)
+            try {
+                const response = await axios.get(`/users/${auth._id}`, { 
+                    headers: {
+                        Authorization: `Bearer ${auth.accessToken}`,
+                    },
+                })
+                setAuthor(response.data.author.username) // Assuming the author data is in response.data
+            } catch (error) {
+                console.error("Error fetching author:", error)
+                // Handle the error as needed
+
+            }
+        };
+    
+        if (auth) {
+            fetchAuthor();
+        }
+    }, [auth]);
+    
+    // alert success
+    useEffect(() => {
+        if (success) {
+            alert('Story created successfully!')
+            setSuccess(false)
+        }
+    }, [success])
+
     const handleCreate = async (e) => {
         e.preventDefault()
         if (!validTitle || !validGenre || !validDescription || !validContent) {
             setErrMsg('Please fill out all fields correctly.')
             return
         }
-        const author = auth.user
         try {
-            const response = await axios.post(STORY_URL,
+            const response = await axios.post(`/stories`,
                 JSON.stringify({title, author, genre, description, content}),
                 {
                     headers: {'Content-Type': 'application/json'},
-                    withCredentials: true
+                    withCredentials: true,
                 }
             )
             console.log(response.data)
@@ -107,8 +139,8 @@ const CreateStory = () => {
                 setErrMsg('Unknown Error')
             }
             errRef.current.focus()
+        } 
         }
-    }
 
   return (
     <section id='story'>
@@ -245,7 +277,7 @@ const CreateStory = () => {
                 </p>
             </label>
 
-            <button>Create Story</button>
+            <button type='submit'>Create Story</button>
         </form>
         <span>Written by { auth.user }</span>
         <Footer />

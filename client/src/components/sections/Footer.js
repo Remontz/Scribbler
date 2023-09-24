@@ -4,11 +4,18 @@ import '../../styles/footer.css'
 
 const Footer = () => {
   const { auth } = useContext(AuthContext)
+
   const [extLinks] = useState({
     github: 'https://github.com/Remontz',
     linkedin: 'https://www.linkedin.com/in/kacy-gilbert-1b1b1b1b1/',
-    portfolio: 'https://kacy-gilbert-portfolio.netlify.app/'
+    portfolio: 'https://kacy-gilbert-portfolio.netlify.app/',
+    email: 'gilbertkacy90@gmail.com'
   })
+
+  const handleEmail = (e) => {
+    e.preventDefault()
+    window.location.href = `mailto:${extLinks.email}`
+  }
 
   return (
     <footer>
@@ -30,7 +37,7 @@ const Footer = () => {
           </a>
         </li>
         <li>
-          <a href='mailto: Kacy Gilbert' onClick="this.href=this.href.replace(' Kacy ', 'gilbertka'); this.href=this.href.replace('Gilbert', 'cy90@gmail.com')">
+          <a href='/' onClick={handleEmail}>
             Email
           </a>
         </li>
