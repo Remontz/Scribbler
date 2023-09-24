@@ -3,7 +3,6 @@ import { useParams } from 'react-router-dom';
 import axios from '../api/axios';
 import Nav from './sections/Nav';
 import Footer from './sections/Footer';
-import { split } from 'sentence-splitter';
 import '../styles/story.css';
 
 const Story = () => {
@@ -47,7 +46,7 @@ const Story = () => {
             if (!storyPageElement) return;
 
             const maxHeight = storyPageElement.clientHeight;
-            const lineHeight = 20; // Adjust this value as needed
+            const lineHeight = 3; // Adjust this value as needed
             const calculatedLinesPerPage = Math.floor(maxHeight / lineHeight);
 
             setLinesPerPage(calculatedLinesPerPage);
@@ -59,9 +58,9 @@ const Story = () => {
     }, []);
 
     useEffect(() => {
-        // Break content into sentences using sentence-splitter
+        // Split content into sentences using regular expressions
         const contentText = story.content || '';
-        const sentences = split(contentText).map(sentence => sentence.raw);
+        const sentences = contentText.split(/(?<=[.!?])\s+(?=[A-Z])/);
 
         // Calculate paginated content
         const pages = [];

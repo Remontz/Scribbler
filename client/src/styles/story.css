@@ -17,10 +17,11 @@
     background-color: rgba(0,0,0,0.4);
     padding: 20px;
     font-size: 1.3\\rem; /* Updated to use the variable */
-    line-height: 1.5; /* Updated to use the variable */
+    line-height: 1.2; /* Updated to use the variable */
     font-family: var(--ubuntu);
     margin: 0 auto;
     max-width: 50%;
+    min-height: 400px;
     max-height: 650px;
     overflow: hidden;
 }
