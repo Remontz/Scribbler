@@ -5,7 +5,7 @@ import { HashLink as Link } from 'react-router-hash-link/dist/react-router-hash-
 import axios from '../api/axios'
 import AuthContext from '../context/AuthProvider'
 
-import '../styles/login.css'
+import '../styles/create.css'
 import Nav from './sections/Nav'
 import Footer from './sections/Footer'
 
@@ -30,6 +30,8 @@ const CreateStory = () => {
     const [validDescription, setValidDescription] = useState(false)
     const [descriptionFocus, setDescriptionFocus] = useState(false)
 
+    const [showContentEntry, setShowContentEntry] = useState(false)
+
     const [content, setContent] = useState('')
     const [validContent, setValidContent] = useState(false)
     const [contentFocus, setContentFocus] = useState(false)
@@ -37,40 +39,46 @@ const CreateStory = () => {
     const [errMsg, setErrMsg] = useState('')
     const [success, setSuccess] = useState(false)
 
+    
     // Set Focus when component loads
     useEffect(() => {
         titleRef.current.focus()
     }, [])
-
+    
     // Set Error Message whenever fields change
     useEffect(() => {
         setErrMsg('')
     }, [title, genre, description, content])
-
+    
     // Validate Title
     useEffect(() => {
         const result = title.length >= 4 && title.length <= 36
         setValidTitle(result)
     }, [title])
-
+    
     // Validate Genre
     useEffect(() => {
         const result = genre.length > 0
         setValidGenre(result)
     }, [genre])
-
+    
     // Validate Description
     useEffect(() => {
         const result = description.length >= 10 && description.length <= 120
         setValidDescription(result)
     }, [description])
-
+    
     // Validate Content
     useEffect(() => {
         const result = content.length >= 500
         setValidContent(result)
     }, [content])
-
+    
+    // // Check if all fields are valid before showing content entry
+    // if(validTitle && validGenre && validDescription && !showContentEntry) {
+    //     setShowContentEntry(true)
+    // }
+    
     useEffect(() => {
         const fetchAuthor = async () => {
             console.log(auth)
@@ -86,10 +94,10 @@ const CreateStory = () => {
             } catch (error) {
                 console.error("Error fetching author:", error)
                 // Handle the error as needed
-
+                
             }
         };
-    
+        
         if (auth) {
             fetchAuthor();
         }
@@ -102,10 +110,21 @@ const CreateStory = () => {
             setSuccess(false)
         }
     }, [success])
-
+    
+    // Functions
+    const handleFieldsCompleted = () => {
+        // Check if the first three fields are completed
+        const isFieldsCompleted = title.length > 0 && genre.length > 0 && description.length > 0
+        if(isFieldsCompleted) {
+            setShowContentEntry(true)
+            setContentFocus(true)
+        } else {
+            setErrMsg('Please fill out all fields correctly.')
+        }
+    }
     const handleCreate = async (e) => {
         e.preventDefault()
-        if (!validTitle || !validGenre || !validDescription || !validContent) {
+        if (!(validTitle && validGenre && validDescription && validContent)) {
             setErrMsg('Please fill out all fields correctly.')
             return
         }
@@ -145,9 +164,32 @@ const CreateStory = () => {
   return (
     <section id='story'>
         <Nav />
-        <p ref={errRef} className={errMsg ? 'errmsg' : 'offscreen'} aria-live='assertive'> {errMsg} </p>
-        <form onSubmit={handleCreate}>
-            <label htmlFor='title'>
+        <p ref={errRef} className={errMsg ? 'errmsg' : 'offscreen'} aria-live='assertive'> 
+            {errMsg} 
+        </p>
+        <form onSubmit={handleCreate} className='form-container'>
+            {showContentEntry ? (
+                <div className='content-entry'>
+                    <div className='writing-tools'>
+                        <h3>Writer's Studio</h3>
+                        {/* Writing tools/buttons */}
+                    </div>
+                    <textarea
+                        type='text'
+                        id='content'
+                        onChange={(e) => setContent(e.target.value)}
+                        required
+                        value={content}
+                        aria-invalid={validContent ? 'false' : 'true'}
+                        aria-describedby='contnote'
+                        onFocus={() => setContentFocus(true)}
+                        onBlur={() => setContentFocus(false)}
+                    />
+                    <button type='submit'>Create Story</button>
+                </div>
+            ) : (
+                <div className='form-fields'>
+                    <label htmlFor='title'>
                 Title:
                 <span className={validTitle ? 'valid' : 'hide'}>
                     <FontAwesomeIcon icon={faCheck} />
@@ -248,36 +290,11 @@ const CreateStory = () => {
                     10 to 120 characters.<br />
                 </p>
             </label>
-
-            <label htmlFor='content'>
-                Content:
-                <span className={validContent ? 'valid' : 'hide'}>
-                    <FontAwesomeIcon icon={faCheck} />
-                </span>
-                <span className={validContent || !content ? 'hide' : 'invalid'}>
-                    <FontAwesomeIcon icon={faTimes} />
-                </span>
-
-                <textarea
-                    type='text'
-                    id='content'
-                    onChange={(e) => setContent(e.target.value)}
-                    required
-                    value={content}
-                    aria-invalid={validContent ? 'false' : 'true'}
-                    aria-describedby='contnote'
-                    col='30'
-                    row='100'
-                    onFocus={() => setContentFocus(true)}
-                    onBlur={() => setContentFocus(false)}
-                />
-                <p id='contnote' className={contentFocus && content && !validContent ? 'instructions' : 'offscreen'}>
-                    <FontAwesomeIcon icon={faInfoCircle} />
-                    500 characters minimum.<br />
-                </p>
-            </label>
-
-            <button type='submit'>Create Story</button>
+            <button type='button' onClick={handleFieldsCompleted} className={validTitle && validGenre && validDescription ? 'show-button' : 'hide-button'}>
+                Start Writing
+            </button>
+                </div>
+            )}
         </form>
         <span>Written by { auth.user }</span>
         <Footer />

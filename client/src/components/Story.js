@@ -52,32 +52,46 @@ const Story = () => {
   }, []);
 
   useEffect(() => {
-    const contentText = story.content || "";
+    const contentText = story.content || '';
     const sentences = contentText.split(/(?<=[.!?])\s+(?=[A-Z])/);
+    console.log('Sentences: ', sentences)
 
-    const pages = [];
-    let currentPage = "";
+    const formattedPages = [];
+    let currentPage = '';
     let currentLineCount = 0;
 
-    sentences.forEach((sentence) => {
-      const sentenceLineCount = sentence.split("\n").length;
+    sentences.forEach(sentence => {
+        console.log('Original Sentence: ', sentence)
+        const sentenceLineCount = sentence.split('\n').length;
 
-      if (currentLineCount + sentenceLineCount <= linesPerPage) {
-        currentPage += sentence + " ";
-        currentLineCount += sentenceLineCount;
-      } else {
-        pages.push(currentPage.trim());
-        currentPage = sentence + " ";
-        currentLineCount = sentenceLineCount;
-      }
+        if (currentLineCount + sentenceLineCount <= linesPerPage) {
+            currentPage += sentence + ' ';
+            currentLineCount += sentenceLineCount;
+        } else {
+            formattedPages.push(currentPage.trim()); // Push the current page
+            currentPage = sentence + ' ';
+            currentLineCount = sentenceLineCount;
+        }
     });
 
     if (currentPage.trim().length > 0) {
-      pages.push(currentPage.trim());
+        formattedPages.push(currentPage.trim()); // Push the last page
     }
 
-    setPaginatedContent(pages);
-  }, [story.content, linesPerPage]);
+    // Split pages into paragraphs while retaining double-spaces
+    const formattedContent = formattedPages.map(page => {
+        const paragraphs = page.split(/\n\n+/); // Split on one or more double-spaces
+        return paragraphs.join('\n\n'); // Retain one double-space between paragraphs
+    });
+
+    console.log('Formatted Content: ', formattedContent);
+
+    setPaginatedContent(formattedContent);
+}, [story.content, linesPerPage]);
+
+
+
+
 
   const handlePageChange = (direction) => {
     if (direction === "next" && currentPage < paginatedContent.length - 1) {
@@ -88,8 +102,13 @@ const Story = () => {
   };
 
   const renderPageContent = () => {
+    const content = paginatedContent[currentPage] || '';
+    const contentWithLineBreaks = content.replace(/\n\n/g, '<br>')
     return (
-      <div className="paragraphStyle">{paginatedContent[currentPage]}</div>
+        <div 
+            className="paragraphStyle"
+            dangerouslySetInnerHTML={{ __html: contentWithLineBreaks }}
+        />
     );
   };
 
