@@ -26,6 +26,7 @@ const Home = () => {
   const [deletingStory, setDeletingStory] = useState(null);
   const [deleteConfirmation, setDeleteConfirmation] = useState('');
   const [deleteTimer, setDeleteTimer] = useState(null);
+  const [authorPasswordsMap, setAuthorPasswordsMap] = useState({}); // Store author hashed passwords
 
   // Combine the two fetch operations into one useEffect
   useEffect(() => {
@@ -44,16 +45,15 @@ const Home = () => {
 
             // Store author names and hashed passwords
             const authorNamesMap = {};
-            const authorPasswordsMap = {};
+            const hashedPasswordsMap = {};
 
             authorData.forEach((author) => {
               authorNamesMap[author._id] = author.username;
-              authorPasswordsMap[author._id] = author.password; // Store hashed passwords securely
+              hashedPasswordsMap[author._id] = author.password; // Store hashed passwords securely
             });
 
             setAuthorsMap(authorNamesMap);
-
-            // Now you have author names and passwords in authorsMap and authorPasswordsMap
+            setAuthorPasswordsMap(hashedPasswordsMap); // Store hashed passwords in state
           })
           .catch((err) => console.log('Error fetching authors', err));
       })
