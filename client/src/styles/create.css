@@ -30,6 +30,29 @@
     background-color: rgba(0, 0, 0, 0.4);
 }
 
+/* Success Message Container */
+.success-message {
+    display: none;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--lite-green);
+    color: var(--bone);
+    font-size: 1.5rem;
+    font-family: var(--ubuntu);
+    border-radius: 0.5rem;
+    padding: 0.5rem;
+    margin: 0.5rem;
+    text-align: center;
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+}
+
+.success-message.show {
+    display: flex;
+    opacity: 1;
+    transform: translateY(0);
+}
+
 /* Styles for the form fields container */
 .form-fields {
     display: flex;
@@ -46,7 +69,7 @@
 /* Styles for valid and invalid indicators */
 .valid,
 .invalid {
-    position: absolute;
+    position: relative;
     top: 50%;
     right: 0;
     transform: translateY(-50%);
@@ -56,9 +79,16 @@
     font-family: var(--ubuntu);
     color: var(--bone);
     background-color: var(--green);
-    opacity: 0;
+    opacity: 0.1;
     transition: opacity 0.5s ease-in-out;
 }
+
+.description-label .valid,
+.description-label .invalid {
+    width: auto;
+    color: var(--suns-orange)
+}
+    
 
 .valid {
     opacity: 1;

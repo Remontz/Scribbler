@@ -1,243 +1,366 @@
-import React, { useRef, useState, useEffect, useContext } from 'react'
-import { faCheck, faTimes, faInfoCircle } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { HashLink as Link } from 'react-router-hash-link/dist/react-router-hash-link.cjs.production'
-import axios from '../api/axios'
-import AuthContext from '../context/AuthProvider'
+import React, { useRef, useState, useEffect, useContext } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCheck, faTimes, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
+import { HashLink as Link } from 'react-router-hash-link';
+import AuthContext from '../context/AuthProvider';
+import axios from '../api/axios';
+import { useNavigate } from 'react-router-dom';
 
-import '../styles/create.css'
-import Nav from './sections/Nav'
-import Footer from './sections/Footer'
+import '../styles/create.css';
+import '../styles/loadingSpinner.css';
+import Nav from './sections/Nav';
+import Footer from './sections/Footer';
 
-const STORY_URL = '/stories'
+const STORY_URL = '/stories';
 
 const CreateStory = () => {
-    const titleRef = useRef()
-    const errRef = useRef()
-    const { auth } = useContext(AuthContext)
-    const [author, setAuthor] = useState()
+    const navigate = useNavigate();
 
-    //Field States
-    const [title, setTitle] = useState('')
-    const [validTitle, setValidTitle] = useState(false)
-    const [titleFocus, setTitleFocus] = useState(false)
+    const { auth } = useContext(AuthContext);
 
-    const [genre, setGenre] = useState('')
-    const [validGenre, setValidGenre] = useState(false)
-    const [genreFocus, setGenreFocus] = useState(false)
+    const [loading, setLoading] = useState(false);
 
-    const [description, setDescription] = useState('')
-    const [validDescription, setValidDescription] = useState(false)
-    const [descriptionFocus, setDescriptionFocus] = useState(false)
+    // Field States
+    const [title, setTitle] = useState('');
+    const [validTitle, setValidTitle] = useState(false);
+    const [titleFocused, setTitleFocused] = useState(false);
 
-    const [showContentEntry, setShowContentEntry] = useState(false)
+    const [genre, setGenre] = useState('');
+    const [validGenre, setValidGenre] = useState(false);
+    const [genreFocused, setGenreFocused] = useState(false);
 
-    const [content, setContent] = useState('')
-    const [validContent, setValidContent] = useState(false)
-    const [contentFocus, setContentFocus] = useState(false)
-
-    const [errMsg, setErrMsg] = useState('')
-    const [success, setSuccess] = useState(false)
+    const [description, setDescription] = useState('');
+    const [validDescription, setValidDescription] = useState(false);
+    const [descriptionFocused, setDescriptionFocused] = useState(false);
 
     
-    // Set Focus when component loads
+    const [content, setContent] = useState('');
+    const [validContent, setValidContent] = useState(false);
+    const [contentFocused, setContentFocused] = useState(false);
+
+    const [author, setAuthor] = useState('');
+    const [validAuthor, setValidAuthor] = useState(false);
+    
+    const [showContentEntry, setShowContentEntry] = useState(false);
+    const [showCreateButton, setShowCreateButton] = useState(false);
+    const [errMsg, setErrMsg] = useState('');
+    const [success, setSuccess] = useState(false);
+
+    // Set Error Message when Field is Invalid
     useEffect(() => {
-        titleRef.current.focus()
-    }, [])
-    
-    // Set Error Message whenever fields change
-    useEffect(() => {
-        setErrMsg('')
-    }, [title, genre, description, content])
-    
+        setErrMsg('');
+    }, [title, genre, description, content, author]);
+
     // Validate Title
     useEffect(() => {
-        const result = title.length >= 4 && title.length <= 36
-        setValidTitle(result)
-    }, [title])
-    
+        const result = title.length >= 4 && title.length <= 36;
+        setValidTitle(result);
+    }, [title]);
+
     // Validate Genre
     useEffect(() => {
-        const result = genre.length > 0
-        setValidGenre(result)
-    }, [genre])
-    
+        const result = genre.length > 0;
+        setValidGenre(result);
+    }, [genre]);
+
     // Validate Description
     useEffect(() => {
-        const result = description.length >= 10 && description.length <= 120
-        setValidDescription(result)
-    }, [description])
-    
+        const result = description.length >= 10 && description.length <= 120;
+        setValidDescription(result);
+    }, [description]);
+
+    // Validate Author
+    useEffect(() => {
+        // check if author is valid
+        const isValid = validAuthor || (author && author.username && author.username === 'Anonymous');
+        // Check if all other fields are valid
+        const allFieldsValid = validTitle && validGenre && validDescription && validContent && isValid;
+
+        // update showCreateButton state
+        setShowCreateButton(allFieldsValid);
+    }, [validTitle, validGenre, validDescription, validContent, validAuthor, author])
+
     // Validate Content
     useEffect(() => {
-        const result = content.length >= 500
-        setValidContent(result)
-    }, [content])
+        const result = content.length >= 500;
+        setValidContent(result);
+    }, [content]);
+
     
-    // // Check if all fields are valid before showing content entry
-    // if(validTitle && validGenre && validDescription && !showContentEntry) {
-    //     setShowContentEntry(true)
-    // }
-    
-    useEffect(() => {
-        const fetchAuthor = async () => {
-            console.log(auth)
-            console.log(auth._id)
-            console.log(auth.accessToken)
-            try {
-                const response = await axios.get(`/users/${auth._id}`, { 
-                    headers: {
-                        Authorization: `Bearer ${auth.accessToken}`,
-                    },
-                })
-                setAuthor(response.data.author.username) // Assuming the author data is in response.data
-            } catch (error) {
-                console.error("Error fetching author:", error)
-                // Handle the error as needed
-                
-            }
-        };
-        
-        if (auth) {
-            fetchAuthor();
-        }
-    }, [auth]);
-    
-    // alert success
-    useEffect(() => {
-        if (success) {
-            alert('Story created successfully!')
-            setSuccess(false)
-        }
-    }, [success])
-    
-    // Functions
-    const handleFieldsCompleted = () => {
-        // Check if the first three fields are completed
-        const isFieldsCompleted = title.length > 0 && genre.length > 0 && description.length > 0
-        if(isFieldsCompleted) {
-            setShowContentEntry(true)
-            setContentFocus(true)
-        } else {
-            setErrMsg('Please fill out all fields correctly.')
-        }
-    }
-    const handleCreate = async (e) => {
-        e.preventDefault()
-        if (!(validTitle && validGenre && validDescription && validContent)) {
-            setErrMsg('Please fill out all fields correctly.')
-            return
-        }
+// Set Author on Component Load
+useEffect(() => {
+    // Function to create an anonymous user
+    const createAnonymousUser = async () => {
         try {
-            const response = await axios.post(`/stories`,
-                JSON.stringify({title, author, genre, description, content}),
+            // Make a request to the server to create an anonymous user
+            const response = await axios.post('/register', {
+                username: 'Anonymous',
+                password: 'Test1234!',
+            });
+
+            // Return the newly created anonymous user
+            return response.data;
+        } catch (err) {
+            console.error(err);
+            // If creating the user fails, return a placeholder user
+            return {
+                _id: '000000000000000000000000',
+                username: 'Anonymous',
+                password: 'Test1234!',
+            };
+        }
+    };
+
+    // Initialize the author as an anonymous user
+    const initAuthor = async () => {
+        let initialAuthor = await createAnonymousUser();
+        // Set the author state
+        setAuthor(initialAuthor);
+        return initialAuthor; // Return the initial author for validation
+    };
+
+    // Function to set the author when a user is logged in
+    const setLoggedInAuthor = (authorId) => {
+        axios
+            .get(`/users/${authorId}`)
+            .then((response) => {
+                console.log(`Logged in | Author: ${response.data.username}`);
+                setAuthor(response.data);
+            })
+            .catch((err) => {
+                console.error(err);
+                setErrMsg('Error getting author');
+                // If getting the author fails, initialize as anonymous user
+                initAuthor();
+            });
+    };
+
+    // If the user is logged in, set the author to the logged-in user
+    if (auth !== null && auth._id && auth.user) {
+        setLoggedInAuthor(auth._id);
+    } else {
+        // If no user is logged in, initialize the author as an anonymous user
+        initAuthor().then((initialAuthor) => {
+            // Check if the initial author is valid (you may need to adjust the validation criteria)
+            if (initialAuthor.username === 'Anonymous') {
+                // Handle validation logic here
+                setValidAuthor(true);
+            }
+        });
+    }
+}, [auth]);
+
+
+
+
+    // Function: Handle Show Content Entry
+    const handleFieldsCompleted = () => {
+        const isFieldsCompleted = title.length > 0 && genre.length > 0 && description.length > 0;
+        if (isFieldsCompleted) {
+            setShowContentEntry(true);
+        } else {
+            setErrMsg('Please fill out all fields correctly.');
+        }
+    };
+
+    // Function: Handle Story Creation Success
+    const handleSuccess = () => {
+        setSuccess(true);
+
+        // Scroll to top of page
+        window.scrollTo(0, 0);
+
+        setTimeout(() => {
+            navigate('/home');
+        }, 5000)
+    }
+
+    // Function: Handle Story Creation
+    const handleCreate = async (e) => {
+        e.preventDefault();
+
+        if (!(validTitle && validGenre && validDescription && validContent && validAuthor)) {
+            setErrMsg('Please fill out all fields correctly.');
+            return;
+        }
+
+        try {
+            setLoading(true);
+
+            const response = await axios.post(
+                STORY_URL,
+                JSON.stringify({
+                    title,
+                    author, 
+                    genre,
+                    description,
+                    content,
+                }),
                 {
-                    headers: {'Content-Type': 'application/json'},
+                    headers: { 'Content-Type': 'application/json' },
                     withCredentials: true,
                 }
-            )
-            console.log(response.data)
-            console.log(response.accessToken)
-            console.log(JSON.stringify(response))
-            setSuccess(true)
-            setTitle('')
-            setGenre('')
-            setDescription('')
-            setContent('')
+            );
+            console.log(response.data);
+            console.log('Story created successfully!')
+            console.log('Title: ' + title + '\nAuthor: ' + author + '\nGenre: ' + genre + '\nDescription: ' + description + '\nContent: ' + content) 
+            console.log('Redirecting to home page...')
+            handleSuccess(); // Success message and redirect
         } catch (err) {
-            console.log(err)
-            if(!err?.response) {
-                setErrMsg('Server Error')
-            } else if(err.response?.status === 409) {
-                setErrMsg('Story already exists')
-            } else if(err.response?.status === 401) {
-                setErrMsg('Unauthorized')
-            } else if(err.response?.status === 500) {
-                setErrMsg('Server Error')
+            console.error(err);
+            if (!err?.response) {
+                setErrMsg('Server Error');
+            } else if (err.response.status === 409) {
+                setErrMsg('Story already exists');
+            } else if (err.response.status === 401) {
+                setErrMsg('Unauthorized');
+            } else if (err.response.status === 500) {
+                setErrMsg('Server Error');
             } else {
-                setErrMsg('Unknown Error')
+                setErrMsg('Unknown Error');
             }
-            errRef.current.focus()
-        } 
+        } finally {
+            setLoading(false);
         }
+    };
 
-  return (
-    <section id='story'>
-        <Nav />
-        <p ref={errRef} className={errMsg ? 'errmsg' : 'offscreen'} aria-live='assertive'> 
-            {errMsg} 
-        </p>
-        <form onSubmit={handleCreate} className='form-container'>
-            {showContentEntry ? (
-                <div className='content-entry'>
-                    <div className='writing-tools'>
-                        <h3>Writer's Studio</h3>
-                        {/* Writing tools/buttons */}
-                    </div>
-                    <textarea
-                        type='text'
-                        id='content'
-                        onChange={(e) => setContent(e.target.value)}
-                        required
-                        value={content}
-                        aria-invalid={validContent ? 'false' : 'true'}
-                        aria-describedby='contnote'
-                        onFocus={() => setContentFocus(true)}
-                        onBlur={() => setContentFocus(false)}
-                    />
-                    <button type='submit'>Create Story</button>
+    // Function: Redirect to Home Page
+    const redirectToHome = () => {
+        navigate('/home'); // Redirect to the home page after successful story creation
+    };
+
+    return (
+        <section id="story">
+            <Nav />
+            {/* Error Message */}
+            <p className={errMsg ? 'errmsg' : 'offscreen'} aria-live="assertive">
+                {errMsg}
+            </p>
+
+            {/* Success Message */}
+            <div className={`success-message ${success ? 'show' : 'hide'}`} aria-live='polite'>
+                {success && (
+                    <p>
+                        Story created successfully! Redirecting to Home...
+                        <button onClick={redirectToHome}>Go to Home</button>
+                    </p>
+                )}
+            </div>
+
+            {/* Loading Message */}
+            {loading && (
+                <div className='spinner-container'>
+                    <div className='spinner'></div>
                 </div>
-            ) : (
-                <div className='form-fields'>
-                    <label htmlFor='title'>
-                Title:
-                <span className={validTitle ? 'valid' : 'hide'}>
-                    <FontAwesomeIcon icon={faCheck} />
-                </span>
-                <span className={validTitle || !title ? 'hide' : 'invalid'}>
-                    <FontAwesomeIcon icon={faTimes} />
-                </span>
+            )}
 
-                <input
-                    type='text'
-                    id='title'
-                    ref={titleRef}
-                    onChange={(e) => setTitle(e.target.value)}
-                    required
-                    value={title}
-                    aria-invalid={validTitle ? 'false' : 'true'}
-                    aria-describedby='titnote'
-                    onFocus={() => setTitleFocus(true)}
-                    onBlur={() => setTitleFocus(false)}
-                />
-                <p id='titnote' className={titleFocus && title && !validTitle ? 'instructions' : 'offscreen'}>
-                    <FontAwesomeIcon icon={faInfoCircle} />
-                    4 to 36 characters.<br />
-                    Must begin with a letter. <br />
-                    Letters, numbers, underscores, hyphens allowed.
-                </p>
-            </label>
+            <h2>Create Story</h2>
 
-            <label htmlFor='genre'>
-                Genre:
-                <span className={validGenre ? 'valid' : 'hide'}>
-                    <FontAwesomeIcon icon={faCheck} />
-                </span>
-                <span className={validGenre || !genre ? 'hide' : 'invalid'}>
-                    <FontAwesomeIcon icon={faTimes} />
-                </span>
+            {/* Form */}
+            <form onSubmit={handleCreate} className="form-container">
+                {showContentEntry ? (
+                    <div className="content-entry">
+                        {/* ... Content Entry Fields ... */}
+                        <label htmlFor="content">
+                            {/* Validation Icons */}
+                            <span className={validContent ? 'valid' : 'hide'}>
+                                <FontAwesomeIcon icon={faCheck} />
+                            </span>
+                            <span className={validContent || !content ? 'hide' : 'invalid'}>
+                                <FontAwesomeIcon icon={faTimes} />
+                            </span>
 
-                <select
-                    type='text'
-                    id='genre'
-                    onChange={(e) => setGenre(e.target.value)}
-                    required
-                    value={genre}
-                    aria-invalid={validGenre ? 'false' : 'true'}
-                    aria-describedby='gennote'
-                    onFocus={() => setGenreFocus(true)}
-                    onBlur={() => setGenreFocus(false)}>
-                        <option value='Fantasy'> Fantasy </option>
+                            {/* Content Entry Field */}
+                            <textarea
+                                type="text"
+                                id="content"
+                                required
+                                value={content}
+                                aria-invalid = {validContent ? 'false' : 'true'}
+                                aria-describedby='contNote'
+                                onFocus = {() => setContentFocused(true)}
+                                onBlur = {() => setContentFocused(false)}
+                                onChange={(e) => setContent(e.target.value)}
+                            />
+
+                            {/* Content Entry Note */}
+                            <p id='contNote' className={contentFocused && content && !validContent ? 'instructions' : 'offscreen'}>
+                                <FontAwesomeIcon icon={faInfoCircle} />
+                                Content must be at least 500 characters long. <br />
+                                Current length: {content.length} characters.
+                            </p>
+                        </label>
+
+                        <button type='submit' className={showCreateButton ? 'show' : 'hide'} disable={!showCreateButton}>
+                            Create Story
+                        </button>
+                    </div>
+                ) : (
+                    <div className="form-fields">
+                        {/* ... Form Fields ... */}
+                        {/* Title */}
+                        <label htmlFor='title'>
+                            Title:
+
+                            {/* Validation Icons */}
+                            <span className={validTitle ? 'valid' : 'hide'}>
+                                <FontAwesomeIcon icon={faCheck} />
+                            </span>
+                            <span className={validTitle || !title ? 'hide' : 'invalid'}>
+                                <FontAwesomeIcon icon={faTimes} />
+                            </span>
+
+                            {/* Title Field */}
+                            <input
+                                type='text'
+                                id='title'
+                                autoFocus
+                                autoCapitalize='true'
+                                required
+                                value={title}
+                                placeholder='Title'
+                                aria-invalid = {validTitle ? 'false' : 'true'}
+                                aria-describedby='titleNote'
+                                onFocus={() => setTitleFocused(true)}
+                                onBlur={() => setTitleFocused(false)}
+                                onChange={(e) => setTitle(e.target.value)}
+                            />
+
+                            {/* Title Note */}
+                            <p id='titleNote' className={titleFocused && title && !validTitle ? 'instructions' : 'offscreen'}>
+                                <FontAwesomeIcon icon={faInfoCircle} />
+                                Title must be between 4 and 36 characters. <br />
+                                Current length: {title.length} characters. <br />
+                                Must begin with a capital letter.
+                            </p>
+                        </label>
+
+                        {/* Genre */}
+                        <label htmlFor='genre'>
+                            Genre:
+
+                            {/* Validation Icons */}
+                            <span className={validGenre ? 'valid' : 'hide'}>
+                                <FontAwesomeIcon icon={faCheck} />
+                            </span>
+                            <span className={validGenre || !genre ? 'hide' : 'invalid'}>
+                                <FontAwesomeIcon icon={faTimes} />
+                            </span>
+
+                            {/* Genre Field */}
+                            <select
+                                type='text'
+                                id='genre'
+                                required
+                                value={genre}
+                                placeholder='Genre'
+                                aria-invalid = {validGenre ? 'false' : 'true'}
+                                aria-describedby='genreNote'
+                                onFocus={() => setGenreFocused(true)}
+                                onBlur={() => setGenreFocused(false)}
+                                onChange={(e) => setGenre(e.target.value)}
+                            >
+                                <option value='Fantasy'> Fantasy </option>
                         <option value='Sci-Fi'> Sci-Fi </option>
                         <option value='Horror'> Horror </option>
                         <option value='Thriller'> Thriller </option>
@@ -256,50 +379,71 @@ const CreateStory = () => {
                         <option value='Poetry'> Poetry </option>
                         <option value='Short Story'> Short Story </option>
                         <option value='Other'> Other </option>
-                    </select>
-                <p id='gennote' className={genreFocus && genre && !validGenre ? 'instructions' : 'offscreen'}>
-                    <FontAwesomeIcon icon={faInfoCircle} />
-                    Select a genre from the dropdown menu.
-                </p>
-            </label>
+                            </select>
 
-            <label htmlFor='description'>
-                Description:
-                <span className={validDescription ? 'valid' : 'hide'}>
-                    <FontAwesomeIcon icon={faCheck} />
-                </span>
-                <span className={validDescription || !description ? 'hide' : 'invalid'}>
-                    <FontAwesomeIcon icon={faTimes} />
-                </span>
+                            {/* Genre Note */}
+                            <p id='genreNote' className={genreFocused && genre && !validGenre ? 'instructions' : 'offscreen'}>
+                                <FontAwesomeIcon icon={faInfoCircle} />
+                                Genre must be selected. <br />
+                                Current genre: {genre}
+                            </p>
+                        </label>
 
-                <textarea
-                    type='text'
-                    id='description'
-                    onChange={(e) => setDescription(e.target.value)}
-                    required
-                    value={description}
-                    aria-invalid={validDescription ? 'false' : 'true'}
-                    aria-describedby='descnote'
-                    col='30'
-                    row='5'
-                    onFocus={() => setDescriptionFocus(true)}
-                    onBlur={() => setDescriptionFocus(false)}
-                />
-                <p id='descnote' className={descriptionFocus && description && !validDescription ? 'instructions' : 'offscreen'}>
-                    <FontAwesomeIcon icon={faInfoCircle} />
-                    10 to 120 characters.<br />
-                </p>
-            </label>
-            <button type='button' onClick={handleFieldsCompleted} className={validTitle && validGenre && validDescription ? 'show-button' : 'hide-button'}>
-                Start Writing
-            </button>
-                </div>
-            )}
-        </form>
-        <span>Written by { auth.user }</span>
-        <Footer />
-    </section>
-  )
-}
+                        {/* Description */}
+                        <label htmlFor='description' className='description-label'>
+                            Description:
+                        </label>
 
-export default CreateStory
+                        {/* Validation Icons */}
+                        <span className={validDescription ? 'valid' : 'hide'}>
+                            <FontAwesomeIcon icon={faCheck} />
+                            &ensp; Valid Descriptions tell the reader what to expect in the story.
+                        </span>
+                        <span className={validDescription || !description ? 'hide' : 'invalid'}>
+                            <FontAwesomeIcon icon={faTimes} />
+                            &ensp; Invalid Descriptions are too short or too long. In addition, they do not tell the reader what to expect from the story.
+                        </span>
+
+                        {/* Description Field */}
+                        <textarea
+                            id='description'
+                            required
+                            value={description}
+                            placeholder='Please describe your story here...'
+                            aria-invalid = {validDescription ? 'false' : 'true'}
+                            aria-describedby='descNote'
+                            onFocus={() => setDescriptionFocused(true)}
+                            onBlur={() => setDescriptionFocused(false)}
+                            onChange={(e) => setDescription(e.target.value)}
+                        />
+
+                        {/* Description Note */}
+                        <p id='descNote' className={descriptionFocused && description && !validDescription ? 'instructions' : 'offscreen'}>
+                            <FontAwesomeIcon icon={faInfoCircle} />
+                            Description must be between 10 and 120 characters. <br />
+                            Current length: {description.length} characters. <br />
+                            Letters, Numbers, Underscores, Spaces, Hyphens, and Punctuation are allowed.
+                        </p>
+
+                        <button
+                            type="button"
+                            onClick={handleFieldsCompleted}
+                            className={
+                                validTitle && validGenre && validDescription
+                                    ? 'show-button'
+                                    : 'hide-button'
+                            }
+                        >
+                            Start Writing as {auth.user ? author.username : 'Anonymous'}
+                        </button>
+                    </div>
+                )}
+            </form>
+            
+            <span>Written by {auth.user ? author.username : 'Anonymous'}</span>
+            <Footer />
+        </section>
+    );
+};
+
+export default CreateStory;

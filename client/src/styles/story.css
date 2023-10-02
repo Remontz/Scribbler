@@ -21,7 +21,7 @@
     font-family: var(--ubuntu);
     margin: 0 auto;
     max-width: 50%;
-    min-height: 400px;
+    min-height: 90vh;
     max-height: 650px;
     overflow: hidden;
     display: flex; /* Display children in a row */
@@ -43,6 +43,7 @@
     margin: 1rem;
     width: 70%;
     max-width: 100vw;
+    max-height: 500px;
     overflow: hidden;
     font-size: 1rem;
     height: auto;
@@ -103,4 +104,115 @@
     justify-content: space-between;
     align-items: center;
     width: 100%;
+}
+
+@media screen and (max-width: 1400px) {
+    .story-page {
+        max-heigth: 400px;
+    }
+}
+
+@media screen and (max-width: 1000px) {
+    .storyStyle {
+        max-width: 70%;
+        max-height: none; /* Remove the maximum height */
+        overflow: visible; /* Remove overflow */
+    }
+
+    .story-page {
+        width: 100%;
+        max-width: 100%;
+        max-height: 350px;
+        height: auto;
+        overflow: visible; /* Remove overflow */
+        font-size: 1rem;
+    }
+
+    .flex-container {
+        display: block;
+        text-align: center;
+    }
+
+    /* Remove display: none; to make the buttons visible */
+    .pagination-button {
+        background-color: transparent;
+        border: 1px solid var(--suns-orange);
+        cursor: pointer;
+        color: var(--suns-orange);
+        font-size: 1rem;
+        font-family: var(--ubuntu);
+        padding: 0.2rem 0.5rem;
+        border-radius: 5px;
+        width: auto;
+        max-width: none; /* Remove the maximum width */
+        margin: 0 5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background-color 0.3s ease, color 0.3s ease;
+    }
+}
+
+
+@media screen and (max-width: 700px) {
+    .storyStyle {
+        max-width: 90%;
+        min-height: auto;
+        max-height: none;
+        overflow: auto;
+    }
+
+    .story-page {
+        width: 100%;
+        max-width: 100%;
+        max-height: 300px;
+        height: auto;
+        overflow: visible;
+        font-size: 1rem;
+    }
+
+    .flex-container {
+        display: block;
+        text-align: center;
+    }
+
+    .pagination-button {
+        max-width: none;
+    }
+}
+
+@media screen and (min-width: 1000px) {
+    .storyStyle {
+        max-width: 70%;
+        max-height: 70vh; /* Limit the maximum height of the container */
+    }
+
+    .story-page {
+        width: 100%;
+        overflow: auto; /* Add scrollbars (when needed) */
+        max-height: 500px; /* Limit the maximum height of the content */
+    }
+
+    .flex-container {
+        max-width: 90%; /* Limit the maximum width of the direct container */
+    }
+
+    .pagination-button {
+        background-color: transparent;
+        border: 1px solid var(--suns-orange);
+        cursor: pointer;
+        color: var(--suns-orange);
+        font-size: 1rem;
+        font-family: var(--ubuntu);
+        padding: 0.2rem 0.5rem;
+        border-radius: 5px;
+        width: auto;
+        max-width: 5%;
+        margin: 0 5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background-color 0.3s ease, color 0.3s ease;
+        position: relative;
+    }
 }

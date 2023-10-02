@@ -6,6 +6,7 @@ import Story from './components/Story'
 import './App.css'
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Helmet } from 'react-helmet'
+import EditStory from './components/EditStory'
 
 function App() {
 
@@ -18,6 +19,7 @@ function App() {
         <Route element={ <Home /> } path='/home' />
         <Route element={ <CreateStory /> } path='/create' />
         <Route element={ <Story /> } path = '/story/:storyId' />
+        <Route element={ <EditStory /> } path = '/edit/:storyId' />
       </Routes>
       <Helmet>
       <link rel="preconnect" href="https://fonts.googleapis.com" />

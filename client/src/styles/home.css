@@ -11,7 +11,77 @@
     --suns-orange: #dd6c1c;
 }
 
-#faves, #library {
+#faves,
+#library {
     color: var(--suns-orange);
     padding: 4rem 1rem;
+}
+
+/* Style the FontAwesomeIcons */
+#edit-story,
+#delete-story {
+    cursor: pointer;
+    position: relative;
+    color: var(--bone); /* Initially white or bone */
+}
+
+/* Create pseudo-elements to display text on hover */
+#edit-story::before,
+#delete-story::before {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: var(--suns-orange);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+/* Define the text content for the pseudo-elements */
+#edit-story::before {
+    content: 'Edit';
+}
+
+#delete-story::before {
+    content: 'Delete';
+}
+
+/* Add the hover effect to show the pseudo-elements */
+#edit-story:hover::before,
+#delete-story:hover::before {
+    opacity: 1;
+}
+
+/* center story-links */
+#story-links {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-top: 10px;
+    margin-left: 3%;
+    gap: 2%;
+}
+
+#divider {
+    width: 10%;
+    height: 2px;
+    background-image: linear-gradient(to right, var(--suns-orange), var(--lite-green));
+    margin: 1rem 0;
+}
+
+/* TimerBox styles */
+.timer-box {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: var(--suns-orange);
+    color: white;
+    text-align: center;
+    padding: 10px 0;
 }

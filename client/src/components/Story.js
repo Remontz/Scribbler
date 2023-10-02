@@ -11,7 +11,7 @@ const Story = () => {
   const [authorName, setAuthorName] = useState("");
   const [currentPage, setCurrentPage] = useState(0);
   const storyPageRef = useRef(null);
-  const [linesPerPage, setLinesPerPage] = useState(1);
+  const [maxCharsPerLine, setMaxCharsPerLine] = useState(50); // Initial value, adjust as needed
   const [paginatedContent, setPaginatedContent] = useState([""]);
 
   useEffect(() => {
@@ -38,60 +38,65 @@ const Story = () => {
   }, [storyId, story.author]);
 
   useEffect(() => {
-    const calculateLinesPerPage = () => {
+    const calculateMaxCharsPerLine = () => {
       const storyPageElement = storyPageRef.current;
       if (!storyPageElement) return;
-      const maxHeight = storyPageElement.clientHeight;
-      const lineHeight = 1;
-      const calculatedLinesPerPage = Math.floor(maxHeight / lineHeight);
-      setLinesPerPage(calculatedLinesPerPage);
+
+      const storyPageWidth = storyPageElement.clientWidth;
+      // Define your logic for max characters per line based on storyPageWidth
+      let newMaxCharsPerLine;
+      if (storyPageWidth > 1400) {
+        newMaxCharsPerLine = 500;
+      } else if (storyPageWidth > 1000) {
+        newMaxCharsPerLine = 25;
+      } else if (storyPageWidth > 700) {
+        newMaxCharsPerLine = 20;
+      } else {
+        newMaxCharsPerLine = 15;
+      }
+
+      setMaxCharsPerLine(newMaxCharsPerLine);
     };
 
-    window.addEventListener("resize", calculateLinesPerPage);
-    calculateLinesPerPage();
+    window.addEventListener("resize", calculateMaxCharsPerLine);
+    calculateMaxCharsPerLine();
+
+    // Cleanup
+    return () => {
+      window.removeEventListener("resize", calculateMaxCharsPerLine);
+    };
   }, []);
 
   useEffect(() => {
-    const contentText = story.content || '';
-    const sentences = contentText.split(/(?<=[.!?])\s+(?=[A-Z])/);
-    console.log('Sentences: ', sentences)
+    const contentText = story.content || "";
+
+    // Calculate the number of characters per line based on maxCharsPerLine
+    const linesPerPage = Math.floor(storyPageRef.current.clientHeight / 1.2); // Adjust line height as needed
+
+    const charsPerLine = Math.floor(
+      storyPageRef.current.clientWidth / maxCharsPerLine
+    );
+
+    const charsPerPage = charsPerLine * linesPerPage;
 
     const formattedPages = [];
-    let currentPage = '';
-    let currentLineCount = 0;
+    let currentPage = "";
 
-    sentences.forEach(sentence => {
-        console.log('Original Sentence: ', sentence)
-        const sentenceLineCount = sentence.split('\n').length;
+    for (let i = 0; i < contentText.length; i++) {
+      currentPage += contentText[i];
 
-        if (currentLineCount + sentenceLineCount <= linesPerPage) {
-            currentPage += sentence + ' ';
-            currentLineCount += sentenceLineCount;
-        } else {
-            formattedPages.push(currentPage.trim()); // Push the current page
-            currentPage = sentence + ' ';
-            currentLineCount = sentenceLineCount;
-        }
-    });
-
-    if (currentPage.trim().length > 0) {
-        formattedPages.push(currentPage.trim()); // Push the last page
+      if (currentPage.length >= charsPerPage) {
+        formattedPages.push(currentPage);
+        currentPage = "";
+      }
     }
 
-    // Split pages into paragraphs while retaining double-spaces
-    const formattedContent = formattedPages.map(page => {
-        const paragraphs = page.split(/\n\n+/); // Split on one or more double-spaces
-        return paragraphs.join('\n\n'); // Retain one double-space between paragraphs
-    });
+    if (currentPage.length > 0) {
+      formattedPages.push(currentPage);
+    }
 
-    console.log('Formatted Content: ', formattedContent);
-
-    setPaginatedContent(formattedContent);
-}, [story.content, linesPerPage]);
-
-
-
-
+    setPaginatedContent(formattedPages);
+  }, [story.content, maxCharsPerLine]);
 
   const handlePageChange = (direction) => {
     if (direction === "next" && currentPage < paginatedContent.length - 1) {
@@ -102,14 +107,8 @@ const Story = () => {
   };
 
   const renderPageContent = () => {
-    const content = paginatedContent[currentPage] || '';
-    const contentWithLineBreaks = content.replace(/\n\n/g, '<br>')
-    return (
-        <div 
-            className="paragraphStyle"
-            dangerouslySetInnerHTML={{ __html: contentWithLineBreaks }}
-        />
-    );
+    const content = paginatedContent[currentPage] || "";
+    return <div className="paragraphStyle">{content}</div>;
   };
 
   return (
